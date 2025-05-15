@@ -23,4 +23,5 @@ def copiar_arquivo(origem: str):
     print(f"Arquivo copiado para {destino}")
 
 
-copiar_arquivo("../regra2/bobello.txt")
+if __name__ == "__main__":
+    copiar_arquivo("../regra2/bobello.txt")
