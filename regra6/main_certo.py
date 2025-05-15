@@ -1,18 +1,40 @@
-def calculo_media_ponderada(valores: list, pesos: list) -> float:
-    if len(valores) != len(pesos):
-        raise ValueError("As listas devem ter o mesmo tamanho.")
+class CalculadoraFinanceira:
+    def calcular_total(self, dados):
+        return sum(
+            item["valor"] for item in dados if item["ativo"] and item["valor"] > 0
+        )
 
-    soma_ponderada = sum(valores * pesos for valores, pesos in zip(valores, pesos))
-    soma_pesos = sum(pesos)
+    def calcular_media(self, total, quantidade):
+        return total / quantidade if quantidade > 0 else 0
 
-    if soma_pesos == 0:
-        raise ValueError("A soma dos pesos não pode ser zero.")
-    return soma_ponderada / soma_pesos
+
+class ImpressoraRelatorio:
+    def imprimir(self, total, media, dados):
+        print("Relatório gerado")
+        print("Total:", total)
+        print("Média:", media)
+        for item in dados:
+            print(f"Item: {item['nome']}, Valor: {item['valor']}")
+
+
+class RelatorioFinanceiro:
+    def __init__(self):
+        self.calc = CalculadoraFinanceira()
+        self.saida = ImpressoraRelatorio()
+
+    def gerar(self, dados):
+        total = self.calc.calcular_total(dados)
+        media = self.calc.calcular_media(total, len(dados))
+        self.saida.imprimir(total, media, dados)
 
 
 if __name__ == "__main__":
-    valores = [7, 8, 9]
-    pesos = [2, 3, 5]
+    dados = [
+        {"nome": "Item 1", "valor": 100, "ativo": True},
+        {"nome": "Item 2", "valor": 200, "ativo": True},
+        {"nome": "Item 3", "valor": -50, "ativo": False},
+        {"nome": "Item 4", "valor": 0, "ativo": True},
+    ]
 
-    resultado = calculo_media_ponderada(valores, pesos)
-    print(f"A média ponderada é: {resultado}")
+    relatorio = RelatorioFinanceiro()
+    relatorio.gerar(dados)

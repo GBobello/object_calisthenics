@@ -1,6 +1,6 @@
 ﻿<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
     <PropertyGroup>
-        <ProjectGuid>{A766BFA8-3FDF-48A2-B276-2212098F502F}</ProjectGuid>
+        <ProjectGuid>{C8EBD4D7-6B5A-440F-B08F-F683B11D6C69}</ProjectGuid>
         <ProjectVersion>20.3</ProjectVersion>
         <FrameworkType>None</FrameworkType>
         <Base>True</Base>

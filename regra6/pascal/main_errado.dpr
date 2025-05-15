@@ -5,49 +5,70 @@ program main_errado;
 uses
   SysUtils;
 
-function CalculoMediaPonderada(v, p: array of Double): Double;
-var
-  i: Integer;
-  s_pod, s_pes: Double;
-begin
-  if Length(v) <> Length(p) then
-    raise Exception.Create('As listas devem ter o mesmo tamanho.');
-
-  s_pod := 0;
-  s_pes := 0;
-
-  for i := 0 to High(v) do
-  begin
-    s_pod := s_pod + (v[i] * p[i]);
-    s_pes := s_pes + p[i];
+type
+  TDadoFinanceiro = record
+    Nome: string;
+    Valor: Double;
+    Ativo: Boolean;
   end;
 
-  if s_pes = 0 then
-    raise Exception.Create('A soma dos pesos não pode ser zero.');
+  TRelatorioFinanceiro = class
+  public
+    procedure Gerar(const Dados: TArray<TDadoFinanceiro>);
+  end;
 
-  Result := s_pod / s_pes;
+procedure TRelatorioFinanceiro.Gerar(const Dados: TArray<TDadoFinanceiro>);
+var
+  Total, Media: Double;
+  Contador: Integer;
+  Item: TDadoFinanceiro;
+begin
+  Total := 0;
+  for Item in Dados do
+  begin
+    if Item.Ativo then
+      if Item.Valor > 0 then
+        Total := Total + Item.Valor;
+  end;
+
+  if Length(Dados) > 0 then
+    Media := Total / Length(Dados)
+  else
+    Media := 0;
+
+  Writeln('Relatório gerado');
+  Writeln('Total: ', FormatFloat('0.00', Total));
+  Writeln('Média: ', FormatFloat('0.00', Media));
+
+  for Item in Dados do
+    Writeln('Item: ', Item.Nome, ', Valor: ', FormatFloat('0.00', Item.Valor));
 end;
 
 var
-  v: array of Double;
-  p: array of Double;
-  r: Double;
+  Dados: TArray<TDadoFinanceiro>;
+  Relatorio: TRelatorioFinanceiro;
 begin
   try
-    SetLength(v, 3);
-    SetLength(p, 3);
+    SetLength(Dados, 3);
 
-    v[0] := 7;
-    v[1] := 8;
-    v[2] := 9;
+    Dados[0].Nome := 'Produto A';
+    Dados[0].Valor := 100.00;
+    Dados[0].Ativo := True;
 
-    p[0] := 2;
-    p[1] := 3;
-    p[2] := 5;
+    Dados[1].Nome := 'Produto B';
+    Dados[1].Valor := 200.00;
+    Dados[1].Ativo := False;
 
-    r := CalculoMediaPonderada(v, p);
-    Writeln('A média ponderada é: ', FormatFloat('0.00', r));
-    sleep(10000);
+    Dados[2].Nome := 'Produto C';
+    Dados[2].Valor := 150.00;
+    Dados[2].Ativo := True;
+
+    Relatorio := TRelatorioFinanceiro.Create;
+    try
+      Relatorio.Gerar(Dados);
+    finally
+      Relatorio.Free;
+    end;
   except
     on E: Exception do
       Writeln('Erro: ', E.Message);

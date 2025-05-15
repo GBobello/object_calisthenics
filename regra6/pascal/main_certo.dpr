@@ -5,50 +5,110 @@ program main_certo;
 uses
   SysUtils;
 
-function CalculoMediaPonderada(valores, pesos: array of Double): Double;
-var
-  i: Integer;
-  somaPonderada, somaPesos: Double;
-begin
-  if Length(valores) <> Length(pesos) then
-    raise Exception.Create('As listas devem ter o mesmo tamanho.');
-
-  somaPonderada := 0;
-  somaPesos := 0;
-
-  for i := 0 to High(valores) do
-  begin
-    somaPonderada := somaPonderada + (valores[i] * pesos[i]);
-    somaPesos := somaPesos + pesos[i];
+type
+  TDadoFinanceiro = record
+    Nome: string;
+    Valor: Double;
+    Ativo: Boolean;
   end;
 
-  if somaPesos = 0 then
-    raise Exception.Create('A soma dos pesos não pode ser zero.');
+  TCalculadoraFinanceira = class
+  public
+    function CalcularTotal(const Dados: TArray<TDadoFinanceiro>): Double;
+    function CalcularMedia(Total: Double; Quantidade: Integer): Double;
+  end;
 
-  Result := somaPonderada / somaPesos;
+  TImpressoraRelatorio = class
+  public
+    procedure Imprimir(Total, Media: Double; const Dados: TArray<TDadoFinanceiro>);
+  end;
+
+  TRelatorioFinanceiro = class
+  private
+    FCalculadora: TCalculadoraFinanceira;
+    FImpressora: TImpressoraRelatorio;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    procedure Gerar(const Dados: TArray<TDadoFinanceiro>);
+  end;
+
+{ TCalculadoraFinanceira }
+
+function TCalculadoraFinanceira.CalcularTotal(const Dados: TArray<TDadoFinanceiro>): Double;
+var
+  Item: TDadoFinanceiro;
+begin
+  Result := 0;
+  for Item in Dados do
+    if Item.Ativo and (Item.Valor > 0) then
+      Result := Result + Item.Valor;
 end;
 
+function TCalculadoraFinanceira.CalcularMedia(Total: Double; Quantidade: Integer): Double;
+begin
+  if Quantidade > 0 then
+    Result := Total / Quantidade
+  else
+    Result := 0;
+end;
+
+{ TImpressoraRelatorio }
+
+procedure TImpressoraRelatorio.Imprimir(Total, Media: Double; const Dados: TArray<TDadoFinanceiro>);
 var
-  valores: array of Double;
-  pesos: array of Double;
-  resultado: Double;
+  Item: TDadoFinanceiro;
+begin
+  Writeln('Relatório gerado');
+  Writeln('Total: ', FormatFloat('0.00', Total));
+  Writeln('Média: ', FormatFloat('0.00', Media));
+
+  for Item in Dados do
+    Writeln('Item: ', Item.Nome, ', Valor: ', FormatFloat('0.00', Item.Valor));
+end;
+
+{ TRelatorioFinanceiro }
+
+constructor TRelatorioFinanceiro.Create;
+begin
+  FCalculadora := TCalculadoraFinanceira.Create;
+  FImpressora := TImpressoraRelatorio.Create;
+end;
+
+destructor TRelatorioFinanceiro.Destroy;
+begin
+  FCalculadora.Free;
+  FImpressora.Free;
+  inherited;
+end;
+
+procedure TRelatorioFinanceiro.Gerar(const Dados: TArray<TDadoFinanceiro>);
+var
+  Total, Media: Double;
+begin
+  Total := FCalculadora.CalcularTotal(Dados);
+  Media := FCalculadora.CalcularMedia(Total, Length(Dados));
+  FImpressora.Imprimir(Total, Media, Dados);
+end;
+
+{ Programa Principal }
+
+var
+  Dados: TArray<TDadoFinanceiro>;
+  Relatorio: TRelatorioFinanceiro;
 begin
   try
-    // Inicialização dos vetores
-    SetLength(valores, 3);
-    SetLength(pesos, 3);
+    SetLength(Dados, 3);
+    Dados[0].Nome := 'Produto A'; Dados[0].Valor := 100.00; Dados[0].Ativo := True;
+    Dados[1].Nome := 'Produto B'; Dados[1].Valor := 200.00; Dados[1].Ativo := False;
+    Dados[2].Nome := 'Produto C'; Dados[2].Valor := 150.00; Dados[2].Ativo := True;
 
-    valores[0] := 7;
-    valores[1] := 8;
-    valores[2] := 9;
-
-    pesos[0] := 2;
-    pesos[1] := 3;
-    pesos[2] := 5;
-
-    resultado := CalculoMediaPonderada(valores, pesos);
-    Writeln('A média ponderada é: ', FormatFloat('0.00', resultado));
-    sleep(10000);
+    Relatorio := TRelatorioFinanceiro.Create;
+    try
+      Relatorio.Gerar(Dados);
+    finally
+      Relatorio.Free;
+    end;
   except
     on E: Exception do
       Writeln('Erro: ', E.Message);
