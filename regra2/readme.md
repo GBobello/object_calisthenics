@@ -1,4 +1,4 @@
-# 2️⃣ Regra 2: **"Não use ELSE"**
+# 2️⃣ Segunda Regra do Object Calisthenics: **"Não use ELSE"**
 
 ### 🧐 Conceito
 

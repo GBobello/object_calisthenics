@@ -1,4 +1,4 @@
-# 6️⃣ Regra 6: **"Não abrevie nomes"**
+# 5️⃣ Quinta Regra do Object Calisthenics: **"Não abrevie nomes"**
 
 ### 🧐 Conceito
 

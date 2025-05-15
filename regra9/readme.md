@@ -1,4 +1,4 @@
-# 9️⃣ Regra 9: **"Sem getters/setters/properties"**
+# 9️⃣ Nona Regra do Object Calisthenics: **"Sem getters/setters/properties"**
 
 ### 🧐 Conceito
 
